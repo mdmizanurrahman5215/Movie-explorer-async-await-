@@ -1,4 +1,9 @@
 console.log("index connected");
+let movies = [];
+const movieContainer = document.getElementById("movie-container");
+const inputElem = document.getElementById("search-input");
+
+
 
 const fetchData = async () => {
   try {
@@ -6,7 +11,7 @@ const fetchData = async () => {
       "http://www.omdbapi.com/?s=batman&page=2&apikey=6fb6b825",
     );
     const data = await res.json();
-    const movies = data.Search;
+    movies = data.Search;
     displayMovie(movies);
     console.log(movies);
   } catch (error) {
@@ -16,9 +21,14 @@ const fetchData = async () => {
 
 fetchData();
 
-const movieContainer = document.getElementById("movie-container");
+
 
 function displayMovie(movies) {
+  movieContainer.innerHTML = "";
+  if (movies.length === 0) {
+  movieContainer.innerHTML = "<p>No movies found</p>";
+  return;
+}
   movies.forEach((movie) => {
     const { Poster, Title, Type, Year, imdbId } = movie;
     const movieCard = document.createElement("div");
@@ -38,6 +48,20 @@ function displayMovie(movies) {
 
         </div>
  `;
- movieContainer.appendChild(movieCard)
+    movieContainer.appendChild(movieCard);
   });
+}
+
+inputElem.addEventListener("input", function (e) {
+  const searchText = e.target.value.toLowerCase();
+  searchMovie(searchText);
+
+
+});
+
+function searchMovie(searchText) {
+  const filteredMovies = movies.filter((movie) =>
+    movie.Title.toLowerCase().includes(searchText),
+  );
+  displayMovie(filteredMovies);
 }
